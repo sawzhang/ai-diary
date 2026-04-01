@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>从层级到智能</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: "PingFang SC", "Helvetica Neue", sans-serif;
+    background: #0f0f0f;
+    color: #f0f0f0;
+    min-height: 100vh;
+    padding: 40px 24px 80px;
+  }
+  .page { max-width: 800px; margin: 0 auto; }
+
+  /* Header */
+  .hero {
+    text-align: center;
+    padding: 60px 0 50px;
+    border-bottom: 1px solid #2a2a2a;
+    margin-bottom: 60px;
+  }
+  .hero .tag {
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    color: #666;
+    text-transform: uppercase;
+    margin-bottom: 20px;
+  }
+  .hero h1 {
+    font-size: 2.6rem;
+    font-weight: 700;
+    line-height: 1.2;
+    background: linear-gradient(135deg, #fff 0%, #888 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 16px;
+  }
+  .hero .sub {
+    font-size: 0.95rem;
+    color: #555;
+    line-height: 1.6;
+  }
+
+  /* Section title */
+  .section-title {
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    color: #444;
+    text-transform: uppercase;
+    margin-bottom: 24px;
+  }
+
+  /* Timeline */
+  .timeline { margin-bottom: 70px; }
+  .timeline-items { position: relative; padding-left: 24px; }
+  .timeline-items::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 8px;
+    bottom: 8px;
+    width: 1px;
+    background: linear-gradient(to bottom, #333, #222);
+  }
+  .tl-item {
+    position: relative;
+    padding: 0 0 32px 28px;
+  }
+  .tl-item::before {
+    content: '';
+    position: absolute;
+    left: -4px;
+    top: 7px;
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    background: #333;
+    border: 1px solid #555;
+  }
+  .tl-year {
+    font-size: 11px;
+    color: #555;
+    letter-spacing: 0.1em;
+    margin-bottom: 4px;
+  }
+  .tl-title {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #ccc;
+    margin-bottom: 4px;
+  }
+  .tl-desc {
+    font-size: 0.82rem;
+    color: #555;
+    line-height: 1.6;
+  }
+
+  /* Core insight */
+  .insight {
+    background: #161616;
+    border: 1px solid #222;
+    border-radius: 12px;
+    padding: 40px;
+    margin-bottom: 70px;
+    text-align: center;
+  }
+  .insight .label {
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    color: #444;
+    text-transform: uppercase;
+    margin-bottom: 20px;
+  }
+  .insight .vs {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 24px;
+    margin-bottom: 28px;
+  }
+  .vs-box {
+    flex: 1;
+    padding: 20px;
+    border-radius: 8px;
+    text-align: center;
+  }
+  .vs-box.old { background: #1a1a1a; border: 1px solid #2a2a2a; }
+  .vs-box.new { background: #111; border: 1px solid #333; }
+  .vs-box .vt { font-size: 0.75rem; color: #555; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.1em; }
+  .vs-box .vv { font-size: 1rem; font-weight: 600; color: #ccc; }
+  .vs-arrow { font-size: 1.2rem; color: #333; flex-shrink: 0; }
+  .insight blockquote {
+    font-size: 1.05rem;
+    color: #888;
+    font-style: italic;
+    line-height: 1.7;
+    border-left: 2px solid #2a2a2a;
+    padding-left: 20px;
+    text-align: left;
+  }
+
+  /* Four pillars */
+  .pillars { margin-bottom: 70px; }
+  .pillars-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+  .pillar {
+    background: #141414;
+    border: 1px solid #222;
+    border-radius: 10px;
+    padding: 24px;
+  }
+  .pillar .num {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #2a2a2a;
+    line-height: 1;
+    margin-bottom: 10px;
+  }
+  .pillar .ptitle {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #bbb;
+    margin-bottom: 6px;
+  }
+  .pillar .pdesc {
+    font-size: 0.78rem;
+    color: #555;
+    line-height: 1.6;
+  }
+
+  /* Roles */
+  .roles { margin-bottom: 70px; }
+  .roles-list { display: flex; flex-direction: column; gap: 12px; }
+  .role {
+    display: flex;
+    align-items: flex-start;
+    gap: 20px;
+    background: #141414;
+    border: 1px solid #222;
+    border-radius: 10px;
+    padding: 20px 24px;
+  }
+  .role-icon {
+    font-size: 1.5rem;
+    flex-shrink: 0;
+    width: 40px;
+    text-align: center;
+  }
+  .role-name {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #bbb;
+    margin-bottom: 4px;
+  }
+  .role-abbr {
+    font-size: 0.7rem;
+    color: #444;
+    letter-spacing: 0.1em;
+    margin-bottom: 6px;
+  }
+  .role-desc {
+    font-size: 0.78rem;
+    color: #555;
+    line-height: 1.6;
+  }
+
+  /* Closing */
+  .closing {
+    background: #111;
+    border: 1px solid #1e1e1e;
+    border-radius: 12px;
+    padding: 40px;
+    text-align: center;
+  }
+  .closing .q {
+    font-size: 1.1rem;
+    color: #888;
+    line-height: 1.7;
+    margin-bottom: 24px;
+    font-style: italic;
+  }
+  .closing .answers {
+    display: flex;
+    gap: 16px;
+    justify-content: center;
+  }
+  .answer {
+    flex: 1;
+    max-width: 220px;
+    padding: 16px;
+    border-radius: 8px;
+    font-size: 0.8rem;
+    line-height: 1.6;
+  }
+  .answer.bad { background: #1a1111; border: 1px solid #2a1818; color: #664444; }
+  .answer.good { background: #0f1a0f; border: 1px solid #1a2a1a; color: #446644; }
+  .answer .at { font-size: 0.7rem; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 6px; opacity: 0.6; }
+
+  .source {
+    text-align: center;
+    margin-top: 48px;
+    font-size: 0.75rem;
+    color: #333;
+  }
+  .source a { color: #444; text-decoration: none; }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <!-- Hero -->
+  <div class="hero">
+    <div class="tag">Block · Jack Dorsey · 2026</div>
+    <h1>从层级到智能</h1>
+    <div class="sub">两千年来，层级是唯一的信息路由机制<br>现在，第一次有了替代方案</div>
+  </div>
+
+  <!-- Timeline -->
+  <div class="timeline">
+    <div class="section-title">层级制度的进化史</div>
+    <div class="timeline-items">
+      <div class="tl-item">
+        <div class="tl-year">公元前 ~200年</div>
+        <div class="tl-title">罗马军队 · 管理幅度诞生</div>
+        <div class="tl-desc">8→80→480→5000，嵌套层级作为信息路由协议。一名领导者最多有效管理3-8人，这个约束延续至今。</div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-year">1806年</div>
+        <div class="tl-title">普鲁士改革 · 中层管理诞生</div>
+        <div class="tl-desc">拿破仑击败普鲁士后，参谋制度诞生——专职路由信息、预处理决策的专业人员，即中层管理的雏形。</div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-year">1850s</div>
+        <div class="tl-title">美国铁路 · 第一张组织架构图</div>
+        <div class="tl-desc">麦卡勒姆创建世界第一张 org chart，军事层级进入商业世界，成为现代企业蓝图。</div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-year">1915年</div>
+        <div class="tl-title">泰勒 · 职能金字塔</div>
+        <div class="tl-desc">科学管理对层级内部进行效率优化，专业分工 + 测量管理，产生了职能金字塔组织。</div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-year">1959年</div>
+        <div class="tl-title">麦肯锡 · 矩阵组织</div>
+        <div class="tl-desc">职能专长 × 事业部，平衡集中标准与本地灵活性，推动战后全球经济。</div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-year">2010s</div>
+        <div class="tl-title">科技公司实验 · 全部失败</div>
+        <div class="tl-desc">Spotify小队、Zappos全体共治、Valve扁平制——规模扩大后全部退回层级。原因一样：没有更强的信息路由机制。</div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-year">现在</div>
+        <div class="tl-title">AI · 第一次真正的替代</div>
+        <div class="tl-desc">AI 能够持续维护整个业务的实时模型，并以层级过去才能做到的方式协调工作。</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Core insight -->
+  <div class="insight">
+    <div class="label">核心转变</div>
+    <div class="vs">
+      <div class="vs-box old">
+        <div class="vt">传统公司</div>
+        <div class="vv">智慧在人身上<br>层级负责路由</div>
+      </div>
+      <div class="vs-arrow">→</div>
+      <div class="vs-box new">
+        <div class="vt">智能型公司</div>
+        <div class="vv">智慧在系统里<br>人在边缘行动</div>
+      </div>
+    </div>
+    <blockquote>
+      "大多数公司给每个人配了副驾驶，让现有结构运转稍好一点但不改变结构。我们追求的是不同的东西：一家作为智能体构建的公司。"
+    </blockquote>
+  </div>
+
+  <!-- Four pillars -->
+  <div class="pillars">
+    <div class="section-title">新型公司的四个构成</div>
+    <div class="pillars-grid">
+      <div class="pillar">
+        <div class="num">01</div>
+        <div class="ptitle">能力积木</div>
+        <div class="pdesc">支付、贷款、发卡、银行等原子级能力。不是产品，是难以复制的构建模块，没有自己的界面。</div>
+      </div>
+      <div class="pillar">
+        <div class="num">02</div>
+        <div class="ptitle">世界模型</div>
+        <div class="pdesc">公司侧：实时掌握自身运营，替代管理层传递的信息。客户侧：基于真实交易数据理解每个用户。</div>
+      </div>
+      <div class="pillar">
+        <div class="num">03</div>
+        <div class="ptitle">智能层</div>
+        <div class="pdesc">将能力自动组合成针对特定客户特定时机的解决方案。路线图不由产品经理决定，由客户现实生成。</div>
+      </div>
+      <div class="pillar">
+        <div class="num">04</div>
+        <div class="ptitle">界面</div>
+        <div class="pdesc">Square、Cash App 等只是交付表面。价值不在界面，在模型和智能。</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Three roles -->
+  <div class="roles">
+    <div class="section-title">只剩三种角色（无永久中层管理）</div>
+    <div class="roles-list">
+      <div class="role">
+        <div class="role-icon">⚙️</div>
+        <div>
+          <div class="role-abbr">IC · Individual Contributor</div>
+          <div class="role-name">个人贡献者</div>
+          <div class="role-desc">深度专家，负责构建和运营某一系统层。世界模型提供上下文，无需等待管理层传话即可做决策。</div>
+        </div>
+      </div>
+      <div class="role">
+        <div class="role-icon">🎯</div>
+        <div>
+          <div class="role-abbr">DRI · Directly Responsible Individual</div>
+          <div class="role-name">直接负责人</div>
+          <div class="role-desc">跨职能问题的短期负责人，有调动任何团队资源的权力。问题解决后可转移至新问题，不是永久岗位。</div>
+        </div>
+      </div>
+      <div class="role">
+        <div class="role-icon">🏋️</div>
+        <div>
+          <div class="role-abbr">Player-coach</div>
+          <div class="role-name">玩家教练</div>
+          <div class="role-desc">既写代码又培养人，替代以信息路由为主业的传统管理者。不开状态会，不做优先级谈判，世界模型和 DRI 结构处理那些事。</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Closing question -->
+  <div class="closing">
+    <div class="q">"你的公司真正深刻理解的是什么？<br>而这种理解，每天都在加深吗？"</div>
+    <div class="answers">
+      <div class="answer bad">
+        <div class="at">如果答案是"没有"</div>
+        AI 只是降本故事。裁员，改善几个季度利润率，最终被更聪明的东西吞并。
+      </div>
+      <div class="answer good">
+        <div class="at">如果答案是"有"</div>
+        AI 不是在增强你的公司，而是在揭示你的公司究竟是什么。
+      </div>
+    </div>
+  </div>
+
+  <div class="source">
+    原文 → <a href="https://block.xyz/inside/from-hierarchy-to-intelligence" target="_blank">block.xyz/inside/from-hierarchy-to-intelligence</a>
+    &nbsp;·&nbsp; 整理：遥远的虾 🦐
+  </div>
+
+</div>
+</body>
+</html>
